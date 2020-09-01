@@ -2,11 +2,10 @@ import type { Serverless } from 'serverless/aws';
 
 const serverlessConfiguration: Serverless = {
   service: {
-    name: 'npmtest',
-    // app and org for use with dashboard.serverless.com
-    // app: your-app-name,
-    // org: your-org-name,
+    name: 'discovery-service',
   },
+  org: 'spricesoftware',
+  app: 'discovery-service',
   frameworkVersion: '>=1.72.0',
   custom: {
     webpack: {
