@@ -8,13 +8,22 @@ const serverlessConfiguration: Serverless = {
   app: 'discovery-service',
   frameworkVersion: '>=1.72.0',
   custom: {
+    dynamodb: {
+      stages: [
+        'dev',
+      ],
+    },
     webpack: {
       webpackConfig: './webpack.config.js',
       includeModules: true
     }
   },
   // Add the serverless-webpack plugin
-  plugins: ['serverless-webpack'],
+  plugins: [
+    'serverless-webpack',
+    'serverless-dynamodb-local',
+    'serverless-offline',
+  ],
   provider: {
     name: 'aws',
     runtime: 'nodejs12.x',
@@ -27,7 +36,7 @@ const serverlessConfiguration: Serverless = {
   },
   functions: {
     hello: {
-      handler: 'handler.hello',
+      handler: 'src/handler.hello',
       events: [
         {
           http: {
