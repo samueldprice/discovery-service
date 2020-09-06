@@ -1,19 +1,13 @@
 import { DynamoDB } from "aws-sdk";
 import { instance } from "./instance";
-import { mapItemListToInstance } from "./mapItemListToInstance";
-import { filterByTtl } from "./dynamoClient";
+import { mapItemListToInstance } from "./mappers";
+import { filterByTtl, getDynamoClient, dynamoConfiguration } from "./dynamoClient";
 
 export const getGroup = async (group: string): Promise<instance[]> => {
-  const { INSTANCES_TABLE, IS_OFFLINE } = process.env;
-  const dynamoClient = IS_OFFLINE === 'true' ?
-  new DynamoDB.DocumentClient({
-    region: 'localhost',
-    endpoint: 'http://localhost:8000',
-  }) :
-  new DynamoDB.DocumentClient();
+  const dynamoClient = getDynamoClient();
 
   const params: DynamoDB.QueryInput = <DynamoDB.QueryInput> {
-    TableName: <DynamoDB.TableName>INSTANCES_TABLE,
+    TableName: <DynamoDB.TableName>dynamoConfiguration.tableName,
     KeyConditionExpression: "#group = :group",
     ExpressionAttributeNames: {
       "#group" : "group"
@@ -33,3 +27,4 @@ export const getGroup = async (group: string): Promise<instance[]> => {
     throw error;
   };
 }
+

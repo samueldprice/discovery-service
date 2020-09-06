@@ -2,7 +2,7 @@ import 'source-map-support/register';
 import { APIGatewayProxyHandler, APIGatewayProxyEvent } from 'aws-lambda';
 import { Context } from 'vm';
 import { DynamoDB } from 'aws-sdk';
-import { mapItemListToInstance } from './mapItemListToInstance';
+import { mapItemListToInstance } from './mappers';
 import { groupSummary } from './instance';
 import { filterByTtl } from './dynamoClient';
 

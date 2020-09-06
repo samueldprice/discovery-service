@@ -28,7 +28,6 @@ export const ttlCalc = (now: number): number => {
 export const filterByTtl = (unfiltered: instance[]): instance[] => {
     // need to prefilter for ttl as dynamo doesnt delete immediately
     const nowSeconds = Math.round(new Date().getTime() / 1000);
-    const filtered = unfiltered.filter(i => i.ttl < nowSeconds);
-    
+    const filtered = unfiltered.filter(i => i.ttl >= nowSeconds);
     return filtered;
 }

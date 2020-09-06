@@ -9,5 +9,11 @@ export const mapItemListToInstance = (items?: ItemList): instance[] => {
     meta: i.meta,
     createdAt: i.createdAt,
     updatedAt: i.updatedAt,
+    ttl: i.ttl,
   }) || [];
+};
+
+export const mapInstanceToOutputDto = (item: instance) => {
+    delete item.ttl;
+    return item;
 };

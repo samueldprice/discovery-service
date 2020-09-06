@@ -12,7 +12,7 @@ const serverlessConfiguration: Serverless = {
       useChildProcesses: true
     },
     tableName: 'instances-${self:provider.stage}',
-    timeToLiveSeconds: 20,
+    timeToLiveSeconds: 120,
     dynamodb: {
       start: {
         migrate: true,
@@ -95,7 +95,18 @@ const serverlessConfiguration: Serverless = {
           }
         }
       ]
-    }
+    },
+    deleteInstance: {
+      handler: 'src/deleteInstanceHandler.unregister',
+      events: [
+        {
+          http: {
+            method: 'delete',
+            path: '/{group}/{id}',
+          }
+        }
+      ]
+    },
   },
   resources: {
     Resources: {

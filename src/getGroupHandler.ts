@@ -1,8 +1,9 @@
-import { APIGatewayProxyHandler, APIGatewayProxyEvent } from 'aws-lambda';
 import 'source-map-support/register';
+import { APIGatewayProxyHandler, APIGatewayProxyEvent } from 'aws-lambda';
 import { Context } from 'vm';
 import { getGroup } from './getGroup';
 import { filterByTtl } from './dynamoClient';
+import { mapInstanceToOutputDto } from './mappers';
 
 export const get: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent, _context: Context) => {
 
@@ -17,9 +18,11 @@ export const get: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent, _
   
   try {
     const results = await getGroup(group);
+    const mapped = filterByTtl(results).map(mapInstanceToOutputDto);
+
     return {
       statusCode: 200,
-      body: JSON.stringify(filterByTtl(results))
+      body: JSON.stringify(mapped)
     };
   }
   catch(error) {
