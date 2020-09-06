@@ -8,7 +8,11 @@ const serverlessConfiguration: Serverless = {
   app: 'discovery-service',
   frameworkVersion: '>=1.72.0',
   custom: {
+    "serverless-offline": {
+      useChildProcesses: true
+    },
     tableName: 'instances-${self:provider.stage}',
+    timeToLiveSeconds: 20,
     dynamodb: {
       start: {
         migrate: true,
@@ -55,6 +59,7 @@ const serverlessConfiguration: Serverless = {
     environment: {
       AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1',
       INSTANCES_TABLE: '${self:custom.tableName}',
+      TTL_SECONDS: '${self:custom.timeToLiveSeconds}',
     },
   },
   functions: {
@@ -122,6 +127,12 @@ const serverlessConfiguration: Serverless = {
             WriteCapacityUnits: 1,
           },
           TableName: '${self:custom.tableName}',
+
+          // 
+          TimeToLiveSpecification: {
+            "AttributeName" : "ttl",
+            "Enabled" : true
+          }
         }
       }
     }

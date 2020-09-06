@@ -2,6 +2,15 @@ This repo was created to contain a solution to a challenge presented for a job a
 
 The challenge is copied below
 
+Apparently it should take no more than 5 hours.
+
+I took considerably longer than 5 hours.
+
+I have detailed some of the challenges in the challenge.md file.
+
+Details missing from the spec are in the missingDetails.md file.
+
+
 
 # Backend Developer Technical Test
 

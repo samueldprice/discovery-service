@@ -1,7 +1,10 @@
-import { APIGatewayProxyHandler, APIGatewayProxyEvent } from 'aws-lambda';
 import 'source-map-support/register';
+import { APIGatewayProxyHandler, APIGatewayProxyEvent } from 'aws-lambda';
 import { Context } from 'vm';
 import { DynamoDB } from 'aws-sdk';
+import { mapItemListToInstance } from './mapItemListToInstance';
+import { groupSummary } from './instance';
+import { filterByTtl } from './dynamoClient';
 
 export const get: APIGatewayProxyHandler = async (_: APIGatewayProxyEvent, _context: Context) => {
   const { INSTANCES_TABLE, IS_OFFLINE } = process.env;
@@ -17,11 +20,32 @@ export const get: APIGatewayProxyHandler = async (_: APIGatewayProxyEvent, _cont
   };
 
   try {
-    const result = await dynamoClient.scan(params).promise();
-    const { Items: instances } = result;
+    const instances = await dynamoClient.scan(params).promise();
+    const summary: groupSummary[] = 
+      filterByTtl(mapItemListToInstance(instances.Items))
+      .reduce((prev, current): groupSummary[] => {
+
+        const existing = prev.find(summary => summary.group === current.group);
+
+        if (existing) {
+          existing.instances += 1;
+          existing.createdAt = Math.min(existing.createdAt, current.createdAt);
+          existing.lastUpdatedAt = Math.max(existing.lastUpdatedAt, current.updatedAt);
+        } else {
+          prev.push(<groupSummary>{
+            createdAt: current.createdAt,
+            group: current.group,
+            instances: 1,
+            lastUpdatedAt: current.updatedAt,
+          });
+        }
+
+        return prev;
+    }, new Array<groupSummary>());
+
     return {
       statusCode: 200,
-      body: JSON.stringify(instances)
+      body: JSON.stringify(summary)
     };
   }
   catch(error) {

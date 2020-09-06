@@ -1,35 +1,25 @@
 import { APIGatewayProxyHandler, APIGatewayProxyEvent } from 'aws-lambda';
 import 'source-map-support/register';
 import { Context } from 'vm';
-import { DynamoDB } from 'aws-sdk';
+import { getGroup } from './getGroup';
+import { filterByTtl } from './dynamoClient';
 
 export const get: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent, _context: Context) => {
-  const { INSTANCES_TABLE, IS_OFFLINE } = process.env;
-  const dynamoClient = IS_OFFLINE === 'true' ?
-    new DynamoDB.DocumentClient({
-      region: 'localhost',
-      endpoint: 'http://localhost:8000',
-    }) :
-    new DynamoDB.DocumentClient();
 
-  const group = event && event.pathParameters && event.pathParameters.group;
+  const group = event?.pathParameters?.group;
 
-  const params: DynamoDB.QueryInput = <DynamoDB.QueryInput>{
-    TableName: <DynamoDB.TableName>INSTANCES_TABLE,
-    KeyConditionExpression: "#group = :group",
-    ExpressionAttributeNames: {
-      "#group" : "group"
-    },
-    ExpressionAttributeValues: {
-      ":group": group
-    }
-  };
-
+  if (!group){
+    return {
+      statusCode: 400,
+      body: 'invalid group'
+    };
+  }
+  
   try {
-    const result = await dynamoClient.query(params).promise();
+    const results = await getGroup(group);
     return {
       statusCode: 200,
-      body: JSON.stringify(result.Items)
+      body: JSON.stringify(filterByTtl(results))
     };
   }
   catch(error) {
@@ -37,7 +27,6 @@ export const get: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent, _
         statusCode: 400,
         body: JSON.stringify({ 
           error,
-          params,
           event,
           message: 'Error retrieving Instances'})
       };
