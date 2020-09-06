@@ -5,7 +5,7 @@ import { instance } from '../instance';
 import { ttlCalc } from '../dynamoClient';
 import { getGroup } from '../dynamoLayer/getGroup';
 import { mapInstanceToOutputDto } from '../mappers';
-import { postInstance } from '../dynamoLayer/postInstance';
+import { postInstance } from '../dynamoLayer';
 
 export const post: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent, _context: Context) => {
 

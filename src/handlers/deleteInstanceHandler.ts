@@ -1,7 +1,7 @@
 import 'source-map-support/register';
 import { APIGatewayProxyHandler, APIGatewayProxyEvent } from 'aws-lambda';
 import { Context } from 'vm';
-import { deleteInstance } from '../dynamoLayer/deleteInstance';
+import { deleteInstance } from '../dynamoLayer';
 
 export const unregister: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent, _context: Context) => {
 

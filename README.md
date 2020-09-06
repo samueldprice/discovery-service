@@ -2,6 +2,8 @@ This repo was created to contain a solution to a challenge presented for a job a
 
 The challenge is copied below
 
+Installation instructions in installationInstructions.md
+
 Apparently it should take no more than 5 hours.
 
 I took considerably longer than 5 hours.
