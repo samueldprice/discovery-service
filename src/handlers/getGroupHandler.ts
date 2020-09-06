@@ -1,9 +1,9 @@
 import 'source-map-support/register';
 import { APIGatewayProxyHandler, APIGatewayProxyEvent } from 'aws-lambda';
 import { Context } from 'vm';
-import { getGroup } from './getGroup';
-import { filterByTtl } from './dynamoClient';
-import { mapInstanceToOutputDto } from './mappers';
+import { getGroup } from '../dynamoLayer/getGroup';
+import { filterByTtl } from '../dynamoClient';
+import { mapInstanceToOutputDto } from '../mappers';
 
 export const get: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent, _context: Context) => {
 

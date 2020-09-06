@@ -1,7 +1,7 @@
 import { DynamoDB } from "aws-sdk";
-import { instance } from "./instance";
-import { mapItemListToInstance } from "./mappers";
-import { filterByTtl, getDynamoClient, dynamoConfiguration } from "./dynamoClient";
+import { instance } from "../instance";
+import { mapItemListToInstance } from "../mappers";
+import { filterByTtl, getDynamoClient, dynamoConfiguration } from "../dynamoClient";
 
 export const getGroup = async (group: string): Promise<instance[]> => {
   const dynamoClient = getDynamoClient();

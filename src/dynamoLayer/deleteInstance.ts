@@ -1,5 +1,5 @@
 import { DynamoDB } from "aws-sdk";
-import {getDynamoClient, dynamoConfiguration } from "./dynamoClient";
+import { getDynamoClient, dynamoConfiguration } from "../dynamoClient";
 
 export const deleteInstance = async (group: string, instanceId: string): Promise<boolean> => {
   const dynamoClient = getDynamoClient();
@@ -10,14 +10,6 @@ export const deleteInstance = async (group: string, instanceId: string): Promise
       "group": group,
       "instanceId": instanceId
     },
-    // ConditionExpression: "group = :group && instanceId = :instanceId",
-    // // ExpressionAttributeNames: {
-    // //   "#group" : "group"
-    // // },
-    // ExpressionAttributeValues: {
-    //   ":group": group,
-    //   ":instanceId": instanceId,
-    // }
   };
 
   try {

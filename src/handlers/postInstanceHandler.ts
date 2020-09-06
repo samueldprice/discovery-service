@@ -1,12 +1,11 @@
-import { APIGatewayProxyHandler, APIGatewayProxyEvent } from 'aws-lambda';
 import 'source-map-support/register';
+import { APIGatewayProxyHandler, APIGatewayProxyEvent } from 'aws-lambda';
 import { Context } from 'vm';
-import { DynamoDB } from 'aws-sdk';
-import { instance } from './instance';
-import { dynamoConfiguration, getDynamoClient, ttlCalc } from './dynamoClient';
-import { getGroup } from './getGroup';
-import { mapInstanceToOutputDto } from './mappers';
-// import { PutItemInputAttributeMap } from 'aws-sdk/clients/dynamodb';
+import { instance } from '../instance';
+import { ttlCalc } from '../dynamoClient';
+import { getGroup } from '../dynamoLayer/getGroup';
+import { mapInstanceToOutputDto } from '../mappers';
+import { postInstance } from '../dynamoLayer/postInstance';
 
 export const post: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent, _context: Context) => {
 
@@ -44,18 +43,10 @@ export const post: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent, 
     ttl: ttl,
   };
 
-  // The typescript definitions for PutItemInput dont seem correct so have to fudge it
-  const params: DynamoDB.PutItemInput = <DynamoDB.PutItemInput>{
-    TableName: <DynamoDB.TableName>dynamoConfiguration.tableName,
-    Item: <any>instance,
-  };
-
-  var result = {};
   try {
-    const dynamoClient = getDynamoClient();
-    result = await dynamoClient.put(params).promise();
+    await postInstance(instance);
     return {
-      statusCode: 200,
+      statusCode: 201,
       body: JSON.stringify(mapInstanceToOutputDto(instance))
     };
   }
@@ -64,8 +55,6 @@ export const post: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent, 
         statusCode: 500,
         body: JSON.stringify({ 
           error,
-          result,
-          params,
           message: 'Error saving instance',
         })
       };

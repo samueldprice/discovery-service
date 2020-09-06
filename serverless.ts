@@ -64,18 +64,18 @@ const serverlessConfiguration: Serverless = {
   },
   functions: {
     getGroup: {
-      handler: 'src/getGroupHandler.get',
+      handler: 'src/handlers/index.getGroup',
       events: [
         {
           http: {
             method: 'get',
             path: 'groups/{group}',
           }
-        }
+        },
       ]
     },
     getGroups: {
-      handler: 'src/getGroupsHandler.get',
+      handler: 'src/handlers/index.getGroupSummary',
       events: [
         {
           http: {
@@ -86,7 +86,7 @@ const serverlessConfiguration: Serverless = {
       ]
     },
     postInstance: {
-      handler: 'src/postInstanceHandler.post',
+      handler: 'src/handlers/index.post',
       events: [
         {
           http: {
@@ -97,7 +97,7 @@ const serverlessConfiguration: Serverless = {
       ]
     },
     deleteInstance: {
-      handler: 'src/deleteInstanceHandler.unregister',
+      handler: 'src/handlers/index.unregister',
       events: [
         {
           http: {

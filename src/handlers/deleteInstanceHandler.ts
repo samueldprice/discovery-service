@@ -1,7 +1,7 @@
 import 'source-map-support/register';
 import { APIGatewayProxyHandler, APIGatewayProxyEvent } from 'aws-lambda';
 import { Context } from 'vm';
-import { deleteInstance } from './deleteInstance';
+import { deleteInstance } from '../dynamoLayer/deleteInstance';
 
 export const unregister: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent, _context: Context) => {
 
@@ -9,7 +9,6 @@ export const unregister: APIGatewayProxyHandler = async (event: APIGatewayProxyE
   const instanceId = event?.pathParameters?.id;
 
   if (!group || !instanceId) {
-    console.log(JSON.stringify(event.pathParameters));
     return {
       statusCode: 400,
       body: 'invalid group or id'
