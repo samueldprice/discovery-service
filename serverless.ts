@@ -8,7 +8,11 @@ const serverlessConfiguration: Serverless = {
   app: 'discovery-service',
   frameworkVersion: '>=1.72.0',
   custom: {
+    tableName: 'instances-${self:provider.stage}',
     dynamodb: {
+      start: {
+        migrate: true,
+      },
       stages: [
         'dev',
       ],
@@ -27,24 +31,99 @@ const serverlessConfiguration: Serverless = {
   provider: {
     name: 'aws',
     runtime: 'nodejs12.x',
+    stage: 'dev',
+    region: 'eu-west-1',
+    iamRoleStatements: [
+      {
+        Effect: 'Allow',
+        Action: [
+           'dynamodb:Query',
+           'dynamodb:Scan',
+           'dynamodb:GetItem',
+           'dynamodb:PutItem',
+           'dynamodb:UpdateItem',
+           'dynamodb:DeleteItem',
+        ],
+        Resource: {
+          "Fn::GetAtt": [ "InstancesDynamoDBTable", "Arn" ]
+        }
+      }
+    ],
     apiGateway: {
       minimumCompressionSize: 1024,
     },
     environment: {
       AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1',
+      INSTANCES_TABLE: '${self:custom.tableName}',
     },
   },
   functions: {
-    hello: {
-      handler: 'src/handler.hello',
+    getGroup: {
+      handler: 'src/getGroupHandler.get',
       events: [
         {
           http: {
             method: 'get',
-            path: 'hello',
+            path: 'groups/{group}',
           }
         }
       ]
+    },
+    getGroups: {
+      handler: 'src/getGroupsHandler.get',
+      events: [
+        {
+          http: {
+            method: 'get',
+            path: 'groups/',
+          }
+        }
+      ]
+    },
+    postInstance: {
+      handler: 'src/postInstanceHandler.post',
+      events: [
+        {
+          http: {
+            method: 'post',
+            path: '/{group}/{id}',
+          }
+        }
+      ]
+    }
+  },
+  resources: {
+    Resources: {
+      InstancesDynamoDBTable: {
+        Type: 'AWS::DynamoDB::Table',
+        Properties: {
+          AttributeDefinitions: [
+            {
+              AttributeName: 'group',
+              AttributeType: 'S',
+            },
+            {
+              AttributeName: 'instanceId',
+              AttributeType: 'S',
+            },
+          ],
+          KeySchema: [
+            {
+              AttributeName: 'group',
+              KeyType: 'HASH',
+            },
+            {
+              AttributeName: 'instanceId',
+              KeyType: 'RANGE',
+            },
+          ],
+          ProvisionedThroughput:{
+            ReadCapacityUnits: 1,
+            WriteCapacityUnits: 1,
+          },
+          TableName: '${self:custom.tableName}',
+        }
+      }
     }
   }
 }
