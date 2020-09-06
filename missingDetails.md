@@ -17,3 +17,6 @@ Therefore I went with a combination of dynamodb ttl which is free and filtering 
 This has some side effects which I'd have to clear with the product owner first. 
 - DynamoTTL settings are saved per entry. Therefore changes to this setting wouldnt affect the actual deletion of existing items.
 - Changes to this setting affect the filtering immediately. This could cause a discrepancy between the in-code filtering and the dynamo deletions. Depending on how severe the PO decided this is we could add code to update all records on config changes.
+
+### Security
+There is no mention of security of if the endpoints should be secured. I have assumed the security will be provided at another layer, e.g. the nextwork layer.
